@@ -1,0 +1,27 @@
+Package: irfitr
+Type: Package
+Title: Iterative Ratio Fitting for the Tidyverse
+Depends:
+    dplyr (>= 0.7.0),
+    tidyr (>= 0.7.0),
+    purrr (>= 0.2.4),
+    magrittr (>= 1.5),
+    tibble (>= 1.4.0),
+    truncnorm
+Version: 0.0.0.9001
+Author: Ryan Timpe <ryan.timpe at gmail.com>
+Authors@R: c(
+    person("Ryan", "Timpe", email = "ryan.timpe@gmail.com", role = c("aut", "cre")),
+    person("International Planning & Research Corp", email = "ryan.timpe@iprcorp.com", role = "cph")
+    )
+Description: A tool for using iterative proportion fitting within the 'tidyverse' framework. 
+    Creates new dimensions of ratio bands from numerator and denominator values, ensuring output values have ratios that fall within bands. 
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+URL: https://github.com/ryantimpe/irfitr
+BugReports: https://github.com/ryantimpe/irfitr/issues
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
