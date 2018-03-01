@@ -3,3 +3,5 @@
 export(ir_band_mean)
 export(ir_band_split)
 export(ir_dist_truncnorm_a)
+export(ir_ratio_scale)
+export(ir_split_into_bands)
