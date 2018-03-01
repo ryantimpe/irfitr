@@ -17,7 +17,7 @@
 #' @param save.intermediates Logical. Print out all intermediate calculations with results.
 #' @param save.ratio Logical. Print out final calculated ratios with results.
 #' @param show.messages Logical. Print iteration reports to console.
-#' @return A data frame in same shape as input, with numerator and denominator scaled to new ratio targets
+#' @return A data frame with additional band dimension. Total over this dimension ties to initial data
 #'
 #' @export
 
