@@ -183,7 +183,11 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     ))
 
   message(paste("Initial Distribution ------------"))
-  message(dat1 %>% count(.ratio_check))
+  ratio.check <- dat1 %>% count(.ratio_check)
+  ratio.check.h <- ratio.check %>% filter(.ratio_check == "HIGH") %>% pull()
+  ratio.check.l <- ratio.check %>% filter(.ratio_check == "LOW") %>% pull()
+  message(paste0("High ratios: ", ratio.check.h,
+                 "\nLow ratios: ", ratio.check.l))
 
   ##
   # Iteration loop
@@ -201,13 +205,17 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
 
     message(paste("Round", iteration, "------------"))
     ratio.check <- dat2 %>% count(.ratio_check)
-    message(paste0("High ratios: ", ratio.check %>% filter(.ratio_check == "HIGH") %>% as.integer(),
-                   "\nLow ratios: ", ratio.check %>% filter(.ratio_check == "LOW") %>% as.integer()))
+    ratio.check.h <- ratio.check %>% filter(.ratio_check == "HIGH") %>% pull()
+    ratio.check.l <- ratio.check %>% filter(.ratio_check == "LOW") %>% pull()
+    message(paste0("High ratios: ", ratio.check.h,
+                   "\nLow ratios: ", ratio.check.l))
 
     count_oob <- dat2 %>% filter(.ratio_check != "") %>% nrow()
 
     iteration <- iteration + 1
   }
+
+  message("Wave 1 ratio fitting complete!")
 
   ###
   # Remove Denoms below minimum distribution
@@ -227,9 +235,10 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     }
 
     dat2_check_min <- dat2 %>%
-      filter(.numer_dist > 0 | !is.na(.numer_dist)) %>%
+      filter(.numer_dist > 0 | is.na(.numer_dist)) %>%
       filter(.numer_dist < min_dist)
 
+    message("------------------------")
     message(paste(nrow(dat2_check_min), "instances where the distribution of", denominator, "is less than", round(min_dist*100), "%"))
 
     dat3 <- dat2 %>%
@@ -250,9 +259,15 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
         TRUE ~ ""
       ))
 
-    message(paste("Second wave - Removing", denominator, "with less than", round(min_dist*100), "%"))
-    message(paste("Initial Distribution ------------"))
-    message(dat3 %>% count(.ratio_check))
+    if(nrow(dat2_check_min) > 0){
+      message(paste("Second wave - Removing", denominator, "with less than", round(min_dist*100), "%"))
+      message(paste("Initial Distribution ------------"))
+      ratio.check <- dat3 %>% count(.ratio_check)
+      ratio.check.h <- ratio.check %>% filter(.ratio_check == "HIGH") %>% pull()
+      ratio.check.l <- ratio.check %>% filter(.ratio_check == "LOW") %>% pull()
+      message(paste0("High ratios: ", ratio.check.h,
+                     "\nLow ratios: ", ratio.check.l))
+    }
 
     #New iterations
     count_oob <- dat3 %>% filter(.ratio_check != "") %>% nrow()
@@ -264,8 +279,10 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
 
       message(paste("Wave 2, Round", iteration, "------------"))
       ratio.check <- dat3 %>% count(.ratio_check)
-      message(paste0("High ratios: ", ratio.check %>% filter(.ratio_check == "HIGH") %>% as.integer(),
-                     "\nLow ratios: ", ratio.check %>% filter(.ratio_check == "LOW") %>% as.integer()))
+      ratio.check.h <- ratio.check %>% filter(.ratio_check == "HIGH") %>% pull()
+      ratio.check.l <- ratio.check %>% filter(.ratio_check == "LOW") %>% pull()
+      message(paste0("High ratios: ", ratio.check.h,
+                     "\nLow ratios: ", ratio.check.l))
 
       count_oob <- dat3 %>% filter(.ratio_check != "") %>% nrow()
 
