@@ -200,7 +200,9 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
       ir_ratio_scale(dims = dims, smash_param = smash_param)
 
     message(paste("Round", iteration, "------------"))
-    message(dat2 %>% count(.ratio_check))
+    ratio.check <- dat2 %>% count(.ratio_check)
+    message(paste0("High ratios: ", ratio.check %>% filter(.ratio_check == "HIGH") %>% as.integer(),
+                   "\nLow ratios: ", ratio.check %>% filter(.ratio_check == "LOW") %>% as.integer()))
 
     count_oob <- dat2 %>% filter(.ratio_check != "") %>% nrow()
 
@@ -253,7 +255,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     message(dat3 %>% count(.ratio_check))
 
     #New iterations
-    count_oob <- 9999
+    count_oob <- dat3 %>% filter(.ratio_check != "") %>% nrow()
     iteration <- 1
 
     while(count_oob > 0 && iteration <= max_iterations){
@@ -261,7 +263,9 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
         ir_ratio_scale(dims = dims, smash_param = smash_param)
 
       message(paste("Wave 2, Round", iteration, "------------"))
-      message(dat3 %>% count(.ratio_check))
+      ratio.check <- dat3 %>% count(.ratio_check)
+      message(paste0("High ratios: ", ratio.check %>% filter(.ratio_check == "HIGH") %>% as.integer(),
+                     "\nLow ratios: ", ratio.check %>% filter(.ratio_check == "LOW") %>% as.integer()))
 
       count_oob <- dat3 %>% filter(.ratio_check != "") %>% nrow()
 
