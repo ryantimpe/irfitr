@@ -197,7 +197,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
 
   while(count_oob > 0 && iteration <= max_iterations){
     dat2 <- dat2 %>%
-      ir_band_scale(dims = dims, smash_param = smash_param)
+      ir_ratio_scale(dims = dims, smash_param = smash_param)
 
     message(paste("Round", iteration, "------------"))
     message(dat2 %>% count(.ratio_check))
@@ -225,6 +225,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     }
 
     dat2_check_min <- dat2 %>%
+      filter(.numer_dist > 0 | !is.na(.numer_dist)) %>%
       filter(.numer_dist < min_dist)
 
     message(paste(nrow(dat2_check_min), "instances where the distribution of", denominator, "is less than", round(min_dist*100), "%"))
@@ -257,7 +258,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
 
     while(count_oob > 0 && iteration <= max_iterations){
       dat3 <- dat3 %>%
-        ir_band_scale(dims = dims, smash_param = smash_param)
+        ir_ratio_scale(dims = dims, smash_param = smash_param)
 
       message(paste("Wave 2, Round", iteration, "------------"))
       message(dat3 %>% count(.ratio_check))
