@@ -215,7 +215,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     iteration <- iteration + 1
   }
 
-  message("Wave 1 ratio fitting complete!")
+  message("Wave 1 ratio spitting complete!")
 
   ###
   # Remove Denoms below minimum distribution
@@ -235,15 +235,15 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     }
 
     dat2_check_min <- dat2 %>%
-      filter(.numer_dist > 0 | is.na(.numer_dist)) %>%
-      filter(.numer_dist < min_dist)
+      filter(.denom_dist > 0 | is.na(.denom_dist)) %>%
+      filter(.denom_dist < min_dist)
 
     message("------------------------")
     message(paste(nrow(dat2_check_min), "instances where the distribution of", denominator, "is less than", round(min_dist*100), "%"))
 
     dat3 <- dat2 %>%
-      mutate(.numer_new = ifelse(.numer_dist < min_dist, 0, .numer),
-             .denom_new = ifelse(.numer_dist < min_dist, 0, .denom)) %>%
+      mutate(.numer_new = ifelse(.denom_dist < min_dist, 0, .numer),
+             .denom_new = ifelse(.denom_dist < min_dist, 0, .denom)) %>%
       group_by_(.dots = as.list(dims)) %>%
       mutate(.numer_dist = .numer_new / sum(.numer_new),
              .denom_dist = .denom_new / sum(.denom_new)) %>%
@@ -261,7 +261,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
 
     if(nrow(dat2_check_min) > 0){
       message(paste("Second wave - Removing", denominator, "with less than", round(min_dist*100), "%"))
-      message(paste("Initial Distribution ------------"))
+      message(paste("Initial Redistribution ------------"))
       ratio.check <- dat3 %>% count(.ratio_check)
       ratio.check.h <- ratio.check %>% filter(.ratio_check == "HIGH") %>% pull()
       ratio.check.l <- ratio.check %>% filter(.ratio_check == "LOW") %>% pull()
@@ -270,11 +270,16 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     }
 
     #New iterations
-    count_oob <- dat3 %>% filter(.ratio_check != "") %>% nrow()
+    # count_oob <- dat3 %>% filter(.ratio_check != "") %>% nrow()
+    count_oob <- 9999
     iteration <- 1
+
+    # dat3 <- dat2
 
     while(count_oob > 0 && iteration <= max_iterations){
       dat3 <- dat3 %>%
+        # mutate(.numer = ifelse(.numer_dist < min_dist, 0, .numer),
+        #        .denom = ifelse(.numer_dist < min_dist, 0, .denom)) %>%
         ir_ratio_scale(dims = dims, smash_param = smash_param)
 
       message(paste("Wave 2, Round", iteration, "------------"))
