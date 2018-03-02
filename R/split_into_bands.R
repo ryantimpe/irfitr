@@ -5,6 +5,7 @@
 #'
 #' @param df A data frame of categorical dimensions and two value columns: the numerator and denominator.
 #' @param ratio_name Name of the new categorical dimension containing ratio bands (e.g. Price)
+#' @param sd Standard deviation of truncated normal distribution, expressed as % of mean.
 #' @param minimum_distribution Optional value of the minimum % share of any new band element. (e.g. 0.01 means no bands can contain less than 1% of group total.)
 #' @param seed_numer Optional data frame of initial starting distributions of the numerator.
 #' @param seed_numer_wght Value between 0 and 1 of how much weight should be added to \code{seed_numer}. Larger values may not converge.
@@ -23,7 +24,7 @@
 
 ir_split_into_bands <- function(df, target_dim, numerator, denominator,
                          ratio_name = "Ratio",
-                         minimum_distribution = 0,
+                         sd = 1/3, minimum_distribution = 0,
                          seed_numer = NULL, seed_numer_wght = 0.5,
                          seed_denom = NULL, seed_denom_wght = 0.5,
                          ratio_bounds = NULL, ratio_bounds_names = c("min", "max"),
@@ -121,10 +122,11 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
   wght_seed_denom <- c(wght_seed_denom, 1-wght_seed_denom)
 
   #intialize data frame with bands
+  input_sd <- sd
+
   dat0 <- dat %>%
     mutate(.ratio_nobands = .numer_nobands / .denom_nobands) %>%
-    # mutate(pb_dist = purrr::map(.ratio_nobands, ~ir_dist_truncnorm_a(.x, 1/3, target_bands))) %>%
-    mutate(pb_dist = purrr::map(.ratio_nobands, ~ir_dist_truncnorm_a(1000, .x, 1/3, target_bands))) %>%
+    mutate(pb_dist = purrr::map(.ratio_nobands, ~ir_dist_truncnorm_a(1000, .x, input_sd, target_bands))) %>%
     unnest() %>%
     #Seed numerator input
     do(
