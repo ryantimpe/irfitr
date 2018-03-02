@@ -156,8 +156,8 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
           #If the input min/max is gt/lt the band min/max, 0 out the distribution
           mutate(.x_numer_dist = case_when(
             is.na(.i_band_min) & is.na(.i_band_max) ~ .x_numer_dist,
-            !is.na(.i_band_min) & (.i_band_min > .band_max) ~ 0,
-            !is.na(.i_band_max) & (.i_band_max < .band_min) ~ 0,
+            !is.na(.i_band_min) & (.i_band_min >= .band_max) ~ 0,
+            !is.na(.i_band_max) & (.i_band_max <= .band_min) ~ 0,
             TRUE ~ .x_numer_dist
           )) %>%
           #Use input min/max if applicable
