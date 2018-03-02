@@ -5,7 +5,7 @@
 \title{Wrapper function for \code{ir_split_into_bands()}, pre-populated with Price Tool inputs.}
 \usage{
 ir_pricetool(df, target_dim, numerator = "End-User Spending",
-  denominator = "Shipments", ratio_name = "PRICE",
+  denominator = "Shipments", sd = 1/3, ratio_name = "PRICE",
   minimum_distribution = 0, seed_numer = NULL, seed_numer_wght = 0.5,
   seed_denom = NULL, seed_denom_wght = 0.5, ratio_bounds = NULL,
   ratio_bounds_names = c("min", "max"), smash_param = 1/10,
