@@ -258,19 +258,19 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
         .ratio > .band_max ~ "HIGH",
         TRUE ~ ""
       ))
+    message(paste("Second wave - Removing", denominator, "with less than", round(min_dist*100), "%"))
 
-    if(nrow(dat2_check_min) > 0){
-      message(paste("Second wave - Removing", denominator, "with less than", round(min_dist*100), "%"))
-      message(paste("Initial Redistribution ------------"))
-      ratio.check <- dat3 %>% count(.ratio_check)
-      ratio.check.h <- ratio.check %>% filter(.ratio_check == "HIGH") %>% pull()
-      ratio.check.l <- ratio.check %>% filter(.ratio_check == "LOW") %>% pull()
-      message(paste0("High ratios: ", ratio.check.h,
-                     "\nLow ratios: ", ratio.check.l))
-    }
+    # if(nrow(dat2_check_min) > 0){
+    #   message(paste("Initial Redistribution ------------"))
+    #   ratio.check <- dat3 %>% count(.ratio_check)
+    #   ratio.check.h <- ratio.check %>% filter(.ratio_check == "HIGH") %>% pull()
+    #   ratio.check.l <- ratio.check %>% filter(.ratio_check == "LOW") %>% pull()
+    #   message(paste0("High ratios: ", ratio.check.h,
+    #                  "\nLow ratios: ", ratio.check.l))
+    # }
 
     #New iterations
-    # count_oob <- dat3 %>% filter(.ratio_check != "") %>% nrow()
+    count_oob <- dat3 %>% filter(.ratio_check != "") %>% nrow()
     count_oob <- 9999
     iteration <- 1
 
