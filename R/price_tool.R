@@ -4,6 +4,9 @@
 #'
 #' @param df A data frame of categorical dimensions and two value columns: the numerator and denominator.
 #' @param ratio_name Name of the new categorical dimension containing ratio bands (e.g. Price)
+#' @param sd Standard deviation of truncated normal distribution, expressed as % of mean. Can be a single number, or a data frame of values differing by element.
+#' @param sd_default If \code{sd} is a data frame, value to use for missing elements.
+#' @param sd_name If \code{sd} is a data frame, name of value to use as standard deviatation.
 #' @param minimum_distribution Optional value of the minimum % share of any new band element. (e.g. 0.01 means no bands can contain less than 1% of group total.)
 #' @param seed_numer Optional data frame of initial starting distributions of the numerator.
 #' @param seed_numer_wght Value between 0 and 1 of how much weight should be added to \code{seed_numer}. Larger values may not converge.
@@ -22,7 +25,8 @@
 
 ir_pricetool <- function(df, target_dim,
                          numerator = "End-User Spending", denominator = "Shipments",
-                         sd = 1/3, ratio_name = "PRICE",
+                         sd = 1/3, sd_default = 1/3, sd_name = "sd",
+                         ratio_name = "PRICE",
                          minimum_distribution = 0,
                          seed_numer = NULL, seed_numer_wght = 0.5,
                          seed_denom = NULL, seed_denom_wght = 0.5,
@@ -34,7 +38,8 @@ ir_pricetool <- function(df, target_dim,
                              target_dim = target_dim,
                              numerator = numerator, denominator = denominator,
                              ratio_name = ratio_name,
-                             sd=sd, minimum_distribution = minimum_distribution,
+                             sd = sd, sd_default = sd_default, sd_name = sd_name,
+                             minimum_distribution = minimum_distribution,
                              seed_numer = seed_numer, seed_numer_wght = seed_numer_wght,
                              seed_denom = seed_denom, seed_denom_wght = seed_denom_wght,
                              ratio_bounds = ratio_bounds, ratio_bounds_names = ratio_bounds_names,

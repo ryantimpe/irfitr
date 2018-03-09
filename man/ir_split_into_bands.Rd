@@ -5,9 +5,9 @@
 \title{Add a new "band" dimension to a data frame.}
 \usage{
 ir_split_into_bands(df, target_dim, numerator, denominator,
-  ratio_name = "Ratio", sd = 1/3, minimum_distribution = 0,
-  seed_numer = NULL, seed_numer_wght = 0.5, seed_denom = NULL,
-  seed_denom_wght = 0.5, ratio_bounds = NULL,
+  ratio_name = "Ratio", sd = 1/3, sd_default = 1/3, sd_name = "sd",
+  minimum_distribution = 0, seed_numer = NULL, seed_numer_wght = 0.5,
+  seed_denom = NULL, seed_denom_wght = 0.5, ratio_bounds = NULL,
   ratio_bounds_names = c("min", "max"), smash_param = 1/10,
   max_iterations = 40, save.intermediates = FALSE, save.ratio = FALSE,
   show.messages = TRUE)
@@ -17,7 +17,11 @@ ir_split_into_bands(df, target_dim, numerator, denominator,
 
 \item{ratio_name}{Name of the new categorical dimension containing ratio bands (e.g. Price)}
 
-\item{sd}{Standard deviation of truncated normal distribution, expressed as % of mean.}
+\item{sd}{Standard deviation of truncated normal distribution, expressed as % of mean. Can be a single number, or a data frame of values differing by element.}
+
+\item{sd_default}{If \code{sd} is a data frame, value to use for missing elements.}
+
+\item{sd_name}{If \code{sd} is a data frame, name of value to use as standard deviatation.}
 
 \item{minimum_distribution}{Optional value of the minimum % share of any new band element. (e.g. 0.01 means no bands can contain less than 1% of group total.)}
 

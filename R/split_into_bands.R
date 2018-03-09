@@ -5,7 +5,9 @@
 #'
 #' @param df A data frame of categorical dimensions and two value columns: the numerator and denominator.
 #' @param ratio_name Name of the new categorical dimension containing ratio bands (e.g. Price)
-#' @param sd Standard deviation of truncated normal distribution, expressed as % of mean.
+#' @param sd Standard deviation of truncated normal distribution, expressed as % of mean. Can be a single number, or a data frame of values differing by element.
+#' @param sd_default If \code{sd} is a data frame, value to use for missing elements.
+#' @param sd_name If \code{sd} is a data frame, name of value to use as standard deviatation.
 #' @param minimum_distribution Optional value of the minimum % share of any new band element. (e.g. 0.01 means no bands can contain less than 1% of group total.)
 #' @param seed_numer Optional data frame of initial starting distributions of the numerator.
 #' @param seed_numer_wght Value between 0 and 1 of how much weight should be added to \code{seed_numer}. Larger values may not converge.
@@ -24,7 +26,8 @@
 
 ir_split_into_bands <- function(df, target_dim, numerator, denominator,
                          ratio_name = "Ratio",
-                         sd = 1/3, minimum_distribution = 0,
+                         sd = 1/3, sd_default = 1/3, sd_name = "sd",
+                         minimum_distribution = 0,
                          seed_numer = NULL, seed_numer_wght = 0.5,
                          seed_denom = NULL, seed_denom_wght = 0.5,
                          ratio_bounds = NULL, ratio_bounds_names = c("min", "max"),
@@ -110,6 +113,23 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     inp_bounds <- NULL
   }
 
+  ##
+  # Standard deviation
+  ##
+  if(!(is.data.frame(sd) || (is.numeric(sd) && length(sd) == 1 && sd < 1 && sd > 0))){
+    stop("Standard deviation (sd) should be a single number between 0 and 1 or a data frame of values between 0 and 1.")
+  }
+  if(is.data.frame(sd)){
+    inp_sd <- sd
+
+    names(inp_sd)[names(inp_sd) == sd_name] <- ".i_sd"
+
+    #TODO: Add script to split this df into many if needed
+
+  } else {
+    inp_sd <- NULL
+  }
+
   #####
   # Expand data frame into bands
   #####
@@ -122,11 +142,18 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
   wght_seed_denom <- c(wght_seed_denom, 1-wght_seed_denom)
 
   #intialize data frame with bands
-  input_sd <- sd
-
   dat0 <- dat %>%
     mutate(.ratio_nobands = .numer_nobands / .denom_nobands) %>%
-    mutate(pb_dist = purrr::map(.ratio_nobands, ~ir_dist_truncnorm_a(1000, .x, input_sd, target_bands))) %>%
+    do(
+      if(is.null(inp_sd)){
+        mutate(., pb_dist = purrr::map(.ratio_nobands, ~ir_dist_truncnorm_a(1000, .x, sd, target_bands)))
+      } else {
+        left_join(., inp_sd,
+                  by = names(inp_sd)[!(names(inp_sd) %in% c(".i_sd"))]) %>%
+          mutate(.i_sd = ifelse(is.na(.i_sd), sd_default, .i_sd)) %>%
+          mutate(pb_dist = purrr::map2(.ratio_nobands, .i_sd, ~ir_dist_truncnorm_a(1000, .x, .y, target_bands)))
+      }
+    ) %>%
     unnest() %>%
     #Seed numerator input
     do(

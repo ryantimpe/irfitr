@@ -5,15 +5,21 @@
 \title{Wrapper function for \code{ir_split_into_bands()}, pre-populated with Price Tool inputs.}
 \usage{
 ir_pricetool(df, target_dim, numerator = "End-User Spending",
-  denominator = "Shipments", sd = 1/3, ratio_name = "PRICE",
-  minimum_distribution = 0, seed_numer = NULL, seed_numer_wght = 0.5,
-  seed_denom = NULL, seed_denom_wght = 0.5, ratio_bounds = NULL,
-  ratio_bounds_names = c("min", "max"), smash_param = 1/10,
-  max_iterations = 40, save.intermediates = FALSE, save.ratio = FALSE,
-  show.messages = TRUE)
+  denominator = "Shipments", sd = 1/3, sd_default = 1/3, sd_name = "sd",
+  ratio_name = "PRICE", minimum_distribution = 0, seed_numer = NULL,
+  seed_numer_wght = 0.5, seed_denom = NULL, seed_denom_wght = 0.5,
+  ratio_bounds = NULL, ratio_bounds_names = c("min", "max"),
+  smash_param = 1/10, max_iterations = 40, save.intermediates = FALSE,
+  save.ratio = FALSE, show.messages = TRUE)
 }
 \arguments{
 \item{df}{A data frame of categorical dimensions and two value columns: the numerator and denominator.}
+
+\item{sd}{Standard deviation of truncated normal distribution, expressed as % of mean. Can be a single number, or a data frame of values differing by element.}
+
+\item{sd_default}{If \code{sd} is a data frame, value to use for missing elements.}
+
+\item{sd_name}{If \code{sd} is a data frame, name of value to use as standard deviatation.}
 
 \item{ratio_name}{Name of the new categorical dimension containing ratio bands (e.g. Price)}
 
