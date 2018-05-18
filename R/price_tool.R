@@ -4,7 +4,7 @@
 #'
 #' @param df A data frame of categorical dimensions and two value columns: the numerator and denominator.
 #' @param ratio_name Name of the new categorical dimension containing ratio bands (e.g. Price)
-#' @param sd Standard deviation of truncated normal distribution, expressed as % of mean. Can be a single number, or a data frame of values differing by element.
+#' @param sd Standard deviation of truncated normal distribution, expressed as a percent of mean. Can be a single number, or a data frame of values differing by element.
 #' @param sd_default If \code{sd} is a data frame, value to use for missing elements.
 #' @param sd_name If \code{sd} is a data frame, name of value to use as standard deviatation.
 #' @param minimum_distribution Optional value of the minimum % share of any new band element. (e.g. 0.01 means no bands can contain less than 1% of group total.)

@@ -15,7 +15,7 @@ ir_pricetool(df, target_dim, numerator = "End-User Spending",
 \arguments{
 \item{df}{A data frame of categorical dimensions and two value columns: the numerator and denominator.}
 
-\item{sd}{Standard deviation of truncated normal distribution, expressed as % of mean. Can be a single number, or a data frame of values differing by element.}
+\item{sd}{Standard deviation of truncated normal distribution, expressed as a percent of mean. Can be a single number, or a data frame of values differing by element.}
 
 \item{sd_default}{If \code{sd} is a data frame, value to use for missing elements.}
 

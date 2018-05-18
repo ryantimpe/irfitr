@@ -17,7 +17,7 @@ ir_split_into_bands(df, target_dim, numerator, denominator,
 
 \item{ratio_name}{Name of the new categorical dimension containing ratio bands (e.g. Price)}
 
-\item{sd}{Standard deviation of truncated normal distribution, expressed as % of mean. Can be a single number, or a data frame of values differing by element.}
+\item{sd}{Standard deviation of truncated normal distribution, expressed as a percent of mean. Can be a single number, or a data frame of values differing by element.}
 
 \item{sd_default}{If \code{sd} is a data frame, value to use for missing elements.}
 
