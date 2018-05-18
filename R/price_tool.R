@@ -7,7 +7,7 @@
 #' @param sd Standard deviation of truncated normal distribution, expressed as a percent of mean. Can be a single number, or a data frame of values differing by element.
 #' @param sd_default If \code{sd} is a data frame, value to use for missing elements.
 #' @param sd_name If \code{sd} is a data frame, name of value to use as standard deviatation.
-#' @param minimum_distribution Optional value of the minimum % share of any new band element. (e.g. 0.01 means no bands can contain less than 1% of group total.)
+#' @param minimum_distribution Optional value of the minimum percent share of any new band element. (e.g. 0.01 means no bands can contain less than 1% of group total.)
 #' @param seed_numer Optional data frame of initial starting distributions of the numerator.
 #' @param seed_numer_wght Value between 0 and 1 of how much weight should be added to \code{seed_numer}. Larger values may not converge.
 #' @param seed_denom Optional data frame of initial starting distributions of the denominator.
