@@ -244,7 +244,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     iteration <- iteration + 1
   }
 
-  message("Wave 1 ratio spitting complete!")
+  message("Wave 1 ratio splitting complete!")
 
   ###
   # Remove Denoms below minimum distribution
