@@ -322,6 +322,8 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
 
       iteration <- iteration + 1
     }
+
+    message("Wave 2 ratio splitting complete!")
   }
 
   ##
