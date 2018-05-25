@@ -90,7 +90,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
 
     inp_denom <- inp_numer %>%
       left_join(target_bands %>% select(.band, .band_mean)) %>%
-      mutate(.denom = .i_numer_dist * .band_mean) %>%
+      mutate(.denom = .i_numer_dist / .band_mean) %>%
       select(-.i_numer_dist) %>%
       group_by_at(vars(-.band, -.denom)) %>%
       mutate(.i_denom_dist = .denom / sum(.denom, na.rm=TRUE)) %>%
