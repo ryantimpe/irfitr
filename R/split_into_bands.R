@@ -59,13 +59,24 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
   dims <- names(dat)[!(names(dat) %in% c(".numer_nobands", ".denom_nobands"))]
 
   ###
-  # Additional inputs
+  # Additional inputs -----
   ###
 
   ##
-  # Numerator seed
+  # Seeds ----
   ##
-  if(!is.null(seed_numer)){
+
+  #Weights for seed inputs
+  wght_seed_numer <- max(0, min(seed_numer_wght, 1))
+  wght_seed_numer <- c(wght_seed_numer, 1-wght_seed_numer)
+
+  wght_seed_denom <- max(0, min(seed_denom_wght, 1))
+  wght_seed_denom <- c(wght_seed_denom, 1-wght_seed_denom)
+
+  #Update May 25, 2018 - If only one seed is supplied (eg denom w/o numerator), create a seed for the other to initiallize the ratios correctly
+
+  #1 - Numerator, but no Denominator
+  if(!is.null(seed_numer) & is.null(seed_denom)){
     inp_numer <- seed_numer
 
     names(inp_numer)[names(inp_numer) == numerator] <- ".numer"
@@ -76,14 +87,21 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
       mutate(.i_numer_dist = .numer / sum(.numer, na.rm=TRUE)) %>%
       ungroup() %>%
       select(-.numer)
-  } else {
-    inp_numer <- NULL
-  }
 
-  ##
-  # Denominator seed
-  ##
-  if(!is.null(seed_denom)){
+    inp_denom <- inp_numer %>%
+      left_join(target_bands %>% select(.band, .band_mean)) %>%
+      mutate(.denom = .i_numer_dist * .band_mean) %>%
+      select(-.i_numer_dist) %>%
+      group_by_at(vars(-.band, -.denom)) %>%
+      mutate(.i_denom_dist = .denom / sum(.denom, na.rm=TRUE)) %>%
+      ungroup() %>%
+      select(-.denom)
+
+    #Set denom weights to numer weights
+    wght_seed_denom <- wght_seed_numer
+
+  } else if(!is.null(seed_denom) & is.null(seed_numer)){
+    #2- Denominator but no Numerator
     inp_denom <- seed_denom
 
     names(inp_denom)[names(inp_denom) == denominator] <- ".denom"
@@ -94,7 +112,44 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
       mutate(.i_denom_dist = .denom / sum(.denom, na.rm=TRUE)) %>%
       ungroup() %>%
       select(-.denom)
+
+    inp_numer <- inp_denom %>%
+      left_join(target_bands %>% select(.band, .band_mean)) %>%
+      mutate(.numer = .i_denom_dist * .band_mean) %>%
+      select(-.i_denom_dist) %>%
+      group_by_at(vars(-.band, -.numer)) %>%
+      mutate(.i_numer_dist = .numer / sum(.numer, na.rm=TRUE)) %>%
+      ungroup() %>%
+      select(-.numer)
+
+    #Set numer weights to denom weights
+    wght_seed_numer <- wght_seed_denom
+
+  } else if(!is.null(seed_denom) & is.null(seed_numer)){
+    #3 - Numerator and Denominator supplied (no interaction)
+    inp_numer <- seed_numer
+    inp_denom <- seed_denom
+
+    names(inp_numer)[names(inp_numer) == numerator] <- ".numer"
+    names(inp_numer)[names(inp_numer) == ratio_name]  <- ".band"
+    names(inp_denom)[names(inp_denom) == denominator] <- ".denom"
+    names(inp_denom)[names(inp_denom) == ratio_name]  <- ".band"
+
+    inp_numer <- inp_numer %>%
+      group_by_at(vars(-.band, -.numer)) %>%
+      mutate(.i_numer_dist = .numer / sum(.numer, na.rm=TRUE)) %>%
+      ungroup() %>%
+      select(-.numer)
+
+    inp_denom <- inp_denom %>%
+      group_by_at(vars(-.band, -.denom)) %>%
+      mutate(.i_denom_dist = .denom / sum(.denom, na.rm=TRUE)) %>%
+      ungroup() %>%
+      select(-.denom)
+
   } else {
+    #4 - No inputs
+    inp_numer <- NULL
     inp_denom <- NULL
   }
 
@@ -133,13 +188,6 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
   #####
   # Expand data frame into bands
   #####
-
-  #Weights for seed inputs
-  wght_seed_numer <- max(0, min(seed_numer_wght, 1))
-  wght_seed_numer <- c(wght_seed_numer, 1-wght_seed_numer)
-
-  wght_seed_denom <- max(0, min(seed_denom_wght, 1))
-  wght_seed_denom <- c(wght_seed_denom, 1-wght_seed_denom)
 
   #intialize data frame with bands
   dat0 <- dat %>%
