@@ -8,7 +8,7 @@ Depends:
     magrittr (>= 1.5),
     tibble (>= 1.4.0),
     truncnorm
-Version: 0.0.0.9011
+Version: 0.0.0.9021
 Author: Ryan Timpe <ryan.timpe at gmail.com>
 Authors@R: c(
     person("Ryan", "Timpe", email = "ryan.timpe@gmail.com", role = c("aut", "cre")),

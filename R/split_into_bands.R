@@ -87,15 +87,17 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
       mutate(.i_numer_dist = .numer / sum(.numer, na.rm=TRUE)) %>%
       ungroup() %>%
       select(-.numer)
+#
+#     inp_denom <- inp_numer %>%
+#       left_join(target_bands %>% select(.band, .band_mean), by = ".band") %>%
+#       mutate(.denom = .i_numer_dist / .band_mean) %>%
+#       select(-.i_numer_dist) %>%
+#       group_by_at(vars(-.band, -.denom)) %>%
+#       mutate(.i_denom_dist = .denom / sum(.denom, na.rm=TRUE)) %>%
+#       ungroup() %>%
+#       select(-.denom)
 
-    inp_denom <- inp_numer %>%
-      left_join(target_bands %>% select(.band, .band_mean)) %>%
-      mutate(.denom = .i_numer_dist / .band_mean) %>%
-      select(-.i_numer_dist) %>%
-      group_by_at(vars(-.band, -.denom)) %>%
-      mutate(.i_denom_dist = .denom / sum(.denom, na.rm=TRUE)) %>%
-      ungroup() %>%
-      select(-.denom)
+    inp_denom <- NULL
 
     #Set denom weights to numer weights
     wght_seed_denom <- wght_seed_numer
@@ -114,7 +116,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
       select(-.denom)
 
     inp_numer <- inp_denom %>%
-      left_join(target_bands %>% select(.band, .band_mean)) %>%
+      left_join(target_bands %>% select(.band, .band_mean), by = ".band") %>%
       mutate(.numer = .i_denom_dist * .band_mean) %>%
       select(-.i_denom_dist) %>%
       group_by_at(vars(-.band, -.numer)) %>%
@@ -125,7 +127,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     #Set numer weights to denom weights
     wght_seed_numer <- wght_seed_denom
 
-  } else if(!is.null(seed_denom) & is.null(seed_numer)){
+  } else if(!is.null(seed_denom) & !is.null(seed_numer)){
     #3 - Numerator and Denominator supplied (no interaction)
     inp_numer <- seed_numer
     inp_denom <- seed_denom
@@ -154,7 +156,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
   }
 
   ##
-  # Ratio bounds
+  # Ratio bounds ----
   ##
   if(!is.null(ratio_bounds)){
     inp_bounds <- ratio_bounds
@@ -169,7 +171,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
   }
 
   ##
-  # Standard deviation
+  # Standard deviation ----
   ##
   if(!(is.data.frame(sd) || (is.numeric(sd) && length(sd) == 1 && sd < 1 && sd > 0))){
     stop("Standard deviation (sd) should be a single number between 0 and 1 or a data frame of values between 0 and 1.")
@@ -186,11 +188,11 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
   }
 
   #####
-  # Expand data frame into bands
+  # Expand data frame into bands ----
   #####
 
-  #intialize data frame with bands
   dat0 <- dat %>%
+    #intialize data frame with bands ----
     mutate(.ratio_nobands = .numer_nobands / .denom_nobands) %>%
     do(
       if(is.null(inp_sd)){
@@ -203,7 +205,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
       }
     ) %>%
     unnest() %>%
-    #Seed numerator input
+    #Seed numerator input ----
     do(
       if(!is.null(inp_numer)){
         left_join(., inp_numer,
@@ -214,7 +216,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
         mutate(., .x_numer_dist = .b_numer_dist)
       }
     ) %>%
-    #Seed denominator input
+    #Seed denominator input ----
     do(
       if(!is.null(inp_denom)){
         left_join(., inp_denom,
@@ -225,7 +227,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
         mutate(., .x_denom_dist = .b_denom_dist)
       }
     ) %>%
-    #Additional Ratio min/max info
+    #Additional Ratio min/max info ----
     do(
       if(!is.null(inp_bounds)){
         left_join(., inp_bounds,
@@ -242,7 +244,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
                  .band_max = ifelse((.i_band_max < .band_max) & !is.na(.i_band_max), .i_band_max, .band_max))
       } else {.}
     ) %>%
-    #Initial numerators and denominators
+    #Initial numerators and denominators ----
     mutate(.numer = .numer_nobands * .x_numer_dist,
            .denom = .denom_nobands * .x_denom_dist) %>%
     #Need a .band_max
@@ -250,7 +252,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     mutate(.ratio = .numer / .denom)
 
   ##
-  # Check ratios
+  # Check ratios ----
   ##
   dat1 <- dat0 %>%
     mutate(.ratio_check = case_when(
