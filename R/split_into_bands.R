@@ -87,17 +87,15 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
       mutate(.i_numer_dist = .numer / sum(.numer, na.rm=TRUE)) %>%
       ungroup() %>%
       select(-.numer)
-#
-#     inp_denom <- inp_numer %>%
-#       left_join(target_bands %>% select(.band, .band_mean), by = ".band") %>%
-#       mutate(.denom = .i_numer_dist / .band_mean) %>%
-#       select(-.i_numer_dist) %>%
-#       group_by_at(vars(-.band, -.denom)) %>%
-#       mutate(.i_denom_dist = .denom / sum(.denom, na.rm=TRUE)) %>%
-#       ungroup() %>%
-#       select(-.denom)
 
-    inp_denom <- NULL
+    inp_denom <- inp_numer %>%
+      left_join(target_bands %>% select(.band, .band_mean), by = ".band") %>%
+      mutate(.denom = .i_numer_dist / .band_mean) %>%
+      select(-.i_numer_dist, -.band_mean) %>%
+      group_by_at(vars(-.band, -.denom)) %>%
+      mutate(.i_denom_dist = .denom / sum(.denom, na.rm=TRUE)) %>%
+      ungroup() %>%
+      select(-.denom)
 
     #Set denom weights to numer weights
     wght_seed_denom <- wght_seed_numer
@@ -118,7 +116,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     inp_numer <- inp_denom %>%
       left_join(target_bands %>% select(.band, .band_mean), by = ".band") %>%
       mutate(.numer = .i_denom_dist * .band_mean) %>%
-      select(-.i_denom_dist) %>%
+      select(-.i_denom_dist, -.band_mean) %>%
       group_by_at(vars(-.band, -.numer)) %>%
       mutate(.i_numer_dist = .numer / sum(.numer, na.rm=TRUE)) %>%
       ungroup() %>%
