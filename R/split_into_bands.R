@@ -245,8 +245,12 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     #Initial numerators and denominators ----
     mutate(.numer = .numer_nobands * .x_numer_dist,
            .denom = .denom_nobands * .x_denom_dist) %>%
-    #Need a .band_max
+    #Need a .band_max - min*2 method fails with data is bad and ratio is way higher than upper band
     mutate(.band_max = ifelse(is.na(.band_max), .band_min * 2, .band_max)) %>%
+    #JUne 22, 2018 update
+    rowwise() %>% 
+    mutate(.band_max = ifelse(is.na(.band_max), max(.band_min * 2, .ratio_nobands*2), .band_max)) %>%
+    ungroup() %>% 
     mutate(.ratio = .numer / .denom)
 
   ##
