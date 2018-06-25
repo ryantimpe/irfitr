@@ -23,7 +23,7 @@ ir_pricetool(df, target_dim, numerator = "End-User Spending",
 
 \item{ratio_name}{Name of the new categorical dimension containing ratio bands (e.g. Price)}
 
-\item{minimum_distribution}{Optional value of the minimum % share of any new band element. (e.g. 0.01 means no bands can contain less than 1% of group total.)}
+\item{minimum_distribution}{Optional value of the minimum percent share of any new band element. (e.g. 0.01 means no bands can contain less than 1 percent of group total.)}
 
 \item{seed_numer}{Optional data frame of initial starting distributions of the numerator.}
 

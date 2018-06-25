@@ -23,7 +23,7 @@ ir_split_into_bands(df, target_dim, numerator, denominator,
 
 \item{sd_name}{If \code{sd} is a data frame, name of value to use as standard deviatation.}
 
-\item{minimum_distribution}{Optional value of the minimum % share of any new band element. (e.g. 0.01 means no bands can contain less than 1% of group total.)}
+\item{minimum_distribution}{Optional value of the minimum percent share of any new band element. (e.g. 0.01 means no bands can contain less than 1% of group total.)}
 
 \item{seed_numer}{Optional data frame of initial starting distributions of the numerator.}
 
