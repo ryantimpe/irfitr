@@ -12,6 +12,8 @@
 #' @param seed_numer_wght Value between 0 and 1 of how much weight should be added to \code{seed_numer}. Larger values may not converge.
 #' @param seed_denom Optional data frame of initial starting distributions of the denominator.
 #' @param seed_denom_wght Value between 0 and 1 of how much weight should be added to \code{seed_denom}. Larger values may not converge.
+#' @param ratio_input Optional data frame of average price per unit in a ratio band for all or a subset of rows or columns.
+#' @param ratio_input_name Name of input ratio value in \code{ratio_input}.
 #' @param ratio_bounds Optional data frame of minimum and maximum ratios for specific rows or groups. Uses \code{dplyr::left_join()}, so all values will be replicated over all elements in excluded dimensions.
 #' @param ratio_bounds_names Names of the minimum and maximum ratio values in \code{ratio_bounds}.
 #' @param smash_param For out-of-bound ratios, how much to increase/decrease ratio above/below min/max before next iteration.
@@ -30,6 +32,7 @@ ir_pricetool <- function(df, target_dim,
                          minimum_distribution = 0,
                          seed_numer = NULL, seed_numer_wght = 0.5,
                          seed_denom = NULL, seed_denom_wght = 0.5,
+                         ratio_input = NULL, ratio_input_name = "PRICE_calc",
                          ratio_bounds = NULL, ratio_bounds_names = c("min", "max"),
                          smash_param = 1/10, max_iterations = 40,
                          save.intermediates = FALSE, save.ratio = FALSE, show.messages = TRUE){
@@ -42,6 +45,7 @@ ir_pricetool <- function(df, target_dim,
                              minimum_distribution = minimum_distribution,
                              seed_numer = seed_numer, seed_numer_wght = seed_numer_wght,
                              seed_denom = seed_denom, seed_denom_wght = seed_denom_wght,
+                             ratio_input = ratio_input, ratio_input_name = ratio_input_name,
                              ratio_bounds = ratio_bounds, ratio_bounds_names = ratio_bounds_names,
                              smash_param = smash_param, max_iterations = max_iterations,
                              save.intermediates = save.intermediates, save.ratio = save.ratio,

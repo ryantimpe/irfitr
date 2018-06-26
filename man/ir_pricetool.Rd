@@ -8,6 +8,7 @@ ir_pricetool(df, target_dim, numerator = "End-User Spending",
   denominator = "Shipments", sd = 1/3, sd_default = 1/3, sd_name = "sd",
   ratio_name = "PRICE", minimum_distribution = 0, seed_numer = NULL,
   seed_numer_wght = 0.5, seed_denom = NULL, seed_denom_wght = 0.5,
+  ratio_input = NULL, ratio_input_name = "PRICE_calc",
   ratio_bounds = NULL, ratio_bounds_names = c("min", "max"),
   smash_param = 1/10, max_iterations = 40, save.intermediates = FALSE,
   save.ratio = FALSE, show.messages = TRUE)
@@ -32,6 +33,10 @@ ir_pricetool(df, target_dim, numerator = "End-User Spending",
 \item{seed_denom}{Optional data frame of initial starting distributions of the denominator.}
 
 \item{seed_denom_wght}{Value between 0 and 1 of how much weight should be added to \code{seed_denom}. Larger values may not converge.}
+
+\item{ratio_input}{Optional data frame of average price per unit in a ratio band for all or a subset of rows or columns.}
+
+\item{ratio_input_name}{Name of input ratio value in \code{ratio_input}.}
 
 \item{ratio_bounds}{Optional data frame of minimum and maximum ratios for specific rows or groups. Uses \code{dplyr::left_join()}, so all values will be replicated over all elements in excluded dimensions.}
 
