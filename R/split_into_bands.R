@@ -13,6 +13,8 @@
 #' @param seed_numer_wght Value between 0 and 1 of how much weight should be added to \code{seed_numer}. Larger values may not converge.
 #' @param seed_denom Optional data frame of initial starting distributions of the denominator.
 #' @param seed_denom_wght Value between 0 and 1 of how much weight should be added to \code{seed_denom}. Larger values may not converge.
+#' @param ratio_input Optional data frame of average price per unit in a ratio band for all or a subset of rows or columns.
+#' @param ratio_input_name Name of input ratio value in \code{ratio_input}.
 #' @param ratio_bounds Optional data frame of minimum and maximum ratios for specific rows or groups. Uses \code{dplyr::left_join()}, so all values will be replicated over all elements in excluded dimensions.
 #' @param ratio_bounds_names Names of the minimum and maximum ratio values in \code{ratio_bounds}.
 #' @param smash_param For out-of-bound ratios, how much to increase/decrease ratio above/below min/max before next iteration.
