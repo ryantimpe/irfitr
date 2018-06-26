@@ -11,7 +11,7 @@ ir_dist_truncnorm_a(n, b.mean, b.sd, df_bands)
 
 \item{b.mean}{mean value of distribution.}
 
-\item{b.sd}{standard deviation of distribution, expressed as % of mean.}
+\item{b.sd}{standard deviation of distribution, expressed as percent of mean.}
 
 \item{df_bands}{data frame of price bands, output of \code{ir_band_split()}}
 }

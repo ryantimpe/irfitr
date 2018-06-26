@@ -7,7 +7,8 @@
 ir_split_into_bands(df, target_dim, numerator, denominator,
   ratio_name = "Ratio", sd = 1/3, sd_default = 1/3, sd_name = "sd",
   minimum_distribution = 0, seed_numer = NULL, seed_numer_wght = 0.5,
-  seed_denom = NULL, seed_denom_wght = 0.5, ratio_bounds = NULL,
+  seed_denom = NULL, seed_denom_wght = 0.5, ratio_input = NULL,
+  ratio_input_name = "Ratio_calc", ratio_bounds = NULL,
   ratio_bounds_names = c("min", "max"), smash_param = 1/10,
   max_iterations = 40, save.intermediates = FALSE, save.ratio = FALSE,
   show.messages = TRUE)

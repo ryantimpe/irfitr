@@ -4,7 +4,7 @@
 #'
 #' @param n number of observations.
 #' @param b.mean mean value of distribution.
-#' @param b.sd standard deviation of distribution, expressed as % of mean.
+#' @param b.sd standard deviation of distribution, expressed as percent of mean.
 #' @param df_bands data frame of price bands, output of \code{ir_band_split()}
 #' @return A data frame of each of the price bands from \code{df_bands}, as well as the probability distributions for the numerator and denominators.
 #' @export
@@ -36,9 +36,9 @@ ir_dist_truncnorm_a <- function(n, b.mean, b.sd, df_bands){ #pb.sd as %
   #... edited this mean to be the geomean of the inner 50% of possible ratio to account for the edges
 
   #Revenue by band is the Unit Distribution * Geo Mean ratio in each band
-  banded_numer <- df_bands$.band_mean * denom_dist
+  #banded_numer <- df_bands$.band_mean * denom_dist
   #Normalize
-  numer_dist <- banded_numer / sum(banded_numer)
+  #numer_dist <- banded_numer / sum(banded_numer)
 
   #List of bands and unit shares
   #!!! using a tibble is much slower!
@@ -46,7 +46,7 @@ ir_dist_truncnorm_a <- function(n, b.mean, b.sd, df_bands){ #pb.sd as %
                             .band_min = df_bands$.band_min,
                             .band_max = df_bands$.band_max,
                             .band_mean= df_bands$.band_mean,
-                            .b_numer_dist = numer_dist,
+                            #.b_numer_dist = numer_dist,
                             .b_denom_dist = denom_dist,
                             stringsAsFactors = FALSE)
 

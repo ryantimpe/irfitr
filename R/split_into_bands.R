@@ -30,12 +30,13 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
                          minimum_distribution = 0,
                          seed_numer = NULL, seed_numer_wght = 0.5,
                          seed_denom = NULL, seed_denom_wght = 0.5,
+                         ratio_input = NULL, ratio_input_name = "Ratio_calc",
                          ratio_bounds = NULL, ratio_bounds_names = c("min", "max"),
                          smash_param = 1/10, max_iterations = 40,
                          save.intermediates = FALSE, save.ratio = FALSE, show.messages = TRUE){
 
   if(!is.null(seed_numer) && !is.null(seed_denom)){
-    message("It's not recommended to use both a numerator seed and denominator seed. If necessary, but function does not converge, try lowering the weights.")
+    message("Only use both a numerator seed and denominator seed if they are from the same view and the implied ratios are within bounds. If the function does not converge, try lowering the weights.")
   }
 
   message("Beginning ratio splitting. This may take a few moments...")
@@ -152,6 +153,25 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     inp_numer <- NULL
     inp_denom <- NULL
   }
+  
+  ##
+  # Ratio input ----
+  ##
+  if(!is.null(ratio_input)){
+    inp_ratio <- ratio_input
+    
+    names(inp_ratio)[names(inp_ratio) == ratio_name] <- ".band"
+    names(inp_ratio)[names(inp_ratio) == ratio_input_name] <- ".i_band_mean"
+    
+    #MUST have the .band dimension in this work, else distribution will fail
+    if(!(".band" %in% names(inp_ratio))){
+      stop(paste("Input 'ratio_input' must contain a ratio band dimension called", ratio_name, "\n",
+                 "This input overwrites the generic average price of each band when calculating the initial distribution."))
+    }
+      
+  } else {
+    inp_ratio <- NULL
+  }
 
   ##
   # Ratio bounds ----
@@ -191,6 +211,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
 
   dat0 <- dat %>%
     #intialize data frame with bands ----
+    # This only distributes the Denominator for now, June 26, 2018
     mutate(.ratio_nobands = .numer_nobands / .denom_nobands) %>%
     do(
       if(is.null(inp_sd)){
@@ -203,6 +224,22 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
       }
     ) %>%
     unnest() %>%
+    #Next distribute the Numerator
+    # The do loop allows for overwriting the .band_mean with ratio_input
+    do(
+      if(!is.null(inp_ratio)){
+        left_join(., inp_ratio,
+                  by = names(inp_ratio)[!(names(inp_ratio) %in% c(".i_band_mean"))]) %>% 
+          mutate(.x_band_mean = ifelse(!is.na(.i_band_mean), .i_band_mean, .band_mean))
+      } else {
+        mutate(., .x_band_mean = .band_mean)
+      }
+    ) %>% 
+    #Now calculate numerator distribution with this new .x_band_mean
+    mutate(.b_numer_dist = .b_denom_dist * .x_band_mean) %>% 
+    group_by_at(vars(dims)) %>% 
+    mutate(.b_numer_dist = .b_numer_dist / sum(.b_numer_dist)) %>% 
+    ungroup() %>% 
     #Seed numerator input ----
     do(
       if(!is.null(inp_numer)){
