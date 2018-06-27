@@ -35,8 +35,8 @@ ir_ratio_scale <- function(df, dims, smash_param){
            .denom = ifelse(.numer == 0, 0, .denom)) %>%
     mutate(.ratio = .numer / .denom) %>%
     mutate(.ratio_check = case_when(
-      !is.na(.f_ratio) & .ratio < .f_ratio ~ "LOW",
-      !is.na(.f_ratio) & .ratio > .f_ratio ~ "HIGH",
+      !is.na(.f_ratio) & round(.ratio) < .f_ratio ~ "LOW",
+      !is.na(.f_ratio) & round(.ratio) > .f_ratio ~ "HIGH",
       .ratio < .band_min ~ "LOW",
       .ratio > .band_max ~ "HIGH",
       TRUE ~ ""
