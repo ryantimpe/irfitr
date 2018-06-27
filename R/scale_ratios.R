@@ -14,7 +14,7 @@ ir_ratio_scale <- function(df, dims, smash_param){
   dat <- df %>%
     #Knock ratios into place
     mutate(.ratio = case_when(
-      !is.na(.f_ratio) ~ .f_ratio,
+      !is.na(.f_ratio) ~ .f_ratio, #Frozen ratios have priority over min/max
       .ratio_check == "LOW"  ~ .band_min + (.band_max - .band_min)*smash_param,
       .ratio_check == "HIGH" ~ .band_max - (.band_max - .band_min)*smash_param,
       TRUE ~ .ratio
@@ -35,6 +35,8 @@ ir_ratio_scale <- function(df, dims, smash_param){
            .denom = ifelse(.numer == 0, 0, .denom)) %>%
     mutate(.ratio = .numer / .denom) %>%
     mutate(.ratio_check = case_when(
+      !is.na(.f_ratio) & .ratio < .f_ratio ~ "LOW",
+      !is.na(.f_ratio) & .ratio > .f_ratio ~ "HIGH",
       .ratio < .band_min ~ "LOW",
       .ratio > .band_max ~ "HIGH",
       TRUE ~ ""
