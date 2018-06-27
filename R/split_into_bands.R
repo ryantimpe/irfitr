@@ -34,6 +34,7 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
                          seed_denom = NULL, seed_denom_wght = 0.5,
                          ratio_input = NULL, ratio_input_name = "Ratio_calc",
                          ratio_bounds = NULL, ratio_bounds_names = c("min", "max"),
+                         ratio_freeze = NULL, ratio_freeze_name = "Ratio_calc",
                          smash_param = 1/10, max_iterations = 40,
                          save.intermediates = FALSE, save.ratio = FALSE, show.messages = TRUE){
 
