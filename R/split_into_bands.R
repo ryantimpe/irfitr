@@ -52,6 +52,8 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
 
   if(!is.data.frame(target_dim)){
     target_bands <- ir_band_split(target_dim)
+  } else {
+    target_bands <- target_dim
   }
 
   ##
@@ -201,6 +203,9 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     
     names(inp_freeze)[names(inp_freeze) == ratio_name] <- ".band"
     names(inp_freeze)[names(inp_freeze) == ratio_freeze_name] <- ".f_ratio"
+    
+    # inp_freeze_test <- inp_freeze %>% 
+    #   left_join(ir_band_split(target_bands), by = ".band")
     
     #TODO: Add script to split this df into many if needed
     
