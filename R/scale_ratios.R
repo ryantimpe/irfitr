@@ -14,7 +14,8 @@ ir_ratio_scale <- function(df, dims, smash_param){
   dat <- df %>%
     #Knock ratios into place
     mutate(.ratio = case_when(
-      .ratio_check == "LOW" ~ .band_min + (.band_max - .band_min)*smash_param,
+      !is.na(.f_ratio) ~ .f_ratio,
+      .ratio_check == "LOW"  ~ .band_min + (.band_max - .band_min)*smash_param,
       .ratio_check == "HIGH" ~ .band_max - (.band_max - .band_min)*smash_param,
       TRUE ~ .ratio
     )) %>%

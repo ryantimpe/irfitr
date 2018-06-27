@@ -17,6 +17,8 @@
 #' @param ratio_input_name Name of input ratio value in \code{ratio_input}.
 #' @param ratio_bounds Optional data frame of minimum and maximum ratios for specific rows or groups. Uses \code{dplyr::left_join()}, so all values will be replicated over all elements in excluded dimensions.
 #' @param ratio_bounds_names Names of the minimum and maximum ratio values in \code{ratio_bounds}.
+#' @param ratio_freeze Optional data frame of to freeze ratios for specific rows or groups. Uses \code{dplyr::left_join()}, so all values will be replicated over all elements in excluded dimensions.
+#' @param ratio_freeze_names Name of the freeze ratio values in \code{ratio_freeze}.
 #' @param smash_param For out-of-bound ratios, how much to increase/decrease ratio above/below min/max before next iteration.
 #' @param max_iteration Maximum number of iterations before ceasing iterations for unconverged model runs.
 #' @param save.intermediates Logical. Print out all intermediate calculations with results.
@@ -190,6 +192,21 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
   } else {
     inp_bounds <- NULL
   }
+  
+  ##
+  # Ratio Freezing ----
+  ##
+  if(!is.null(ratio_freeze)){
+    inp_freeze <- ratio_freeze
+    
+    names(inp_freeze)[names(inp_freeze) == ratio_name] <- ".band"
+    names(inp_freeze)[names(inp_freeze) == ratio_freeze_name] <- ".f_ratio"
+    
+    #TODO: Add script to split this df into many if needed
+    
+  } else {
+    inp_freeze <- NULL
+  }
 
   ##
   # Standard deviation ----
@@ -316,9 +333,17 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
   count_oob <- 9999
   iteration <- 1
 
+  #Bring in additional inputs here
   dat2 <- dat1 %>%
     mutate(.numer_dist = .x_numer_dist,
-           .denom_dist = .x_denom_dist)
+           .denom_dist = .x_denom_dist) %>% 
+    #Freeze select bands with inp_freeze and .f_ratio
+    do(
+      if(!is.null(inp_freeze)){
+        left_join(., inp_freeze, 
+                  by = names(inp_freeze)[!(names(inp_freeze) %in% c(".f_ratio"))])
+      } else {.}
+    )
 
   while(count_oob > 0 && iteration <= max_iterations){
     dat2 <- dat2 %>%

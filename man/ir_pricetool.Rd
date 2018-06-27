@@ -10,6 +10,7 @@ ir_pricetool(df, target_dim, numerator = "End-User Spending",
   seed_numer_wght = 0.5, seed_denom = NULL, seed_denom_wght = 0.5,
   ratio_input = NULL, ratio_input_name = "PRICE_calc",
   ratio_bounds = NULL, ratio_bounds_names = c("min", "max"),
+  ratio_freeze = NULL, ratio_freeze_name = "Ratio_calc",
   smash_param = 1/10, max_iterations = 40, save.intermediates = FALSE,
   save.ratio = FALSE, show.messages = TRUE)
 }
@@ -42,6 +43,8 @@ ir_pricetool(df, target_dim, numerator = "End-User Spending",
 
 \item{ratio_bounds_names}{Names of the minimum and maximum ratio values in \code{ratio_bounds}.}
 
+\item{ratio_freeze}{Optional data frame of to freeze ratios for specific rows or groups. Uses \code{dplyr::left_join()}, so all values will be replicated over all elements in excluded dimensions.}
+
 \item{smash_param}{For out-of-bound ratios, how much to increase/decrease ratio above/below min/max before next iteration.}
 
 \item{save.intermediates}{Logical. Print out all intermediate calculations with results.}
@@ -49,6 +52,8 @@ ir_pricetool(df, target_dim, numerator = "End-User Spending",
 \item{save.ratio}{Logical. Print out final calculated ratios with results.}
 
 \item{show.messages}{Logical. Print iteration reports to console.}
+
+\item{ratio_freeze_names}{Name of the freeze ratio values in \code{ratio_freeze}.}
 
 \item{max_iteration}{Maximum number of iterations before ceasing iterations for unconverged model runs.}
 }
