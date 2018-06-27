@@ -204,8 +204,18 @@ ir_split_into_bands <- function(df, target_dim, numerator, denominator,
     names(inp_freeze)[names(inp_freeze) == ratio_name] <- ".band"
     names(inp_freeze)[names(inp_freeze) == ratio_freeze_name] <- ".f_ratio"
     
-    # inp_freeze_test <- inp_freeze %>% 
-    #   left_join(ir_band_split(target_bands), by = ".band")
+    inp_freeze_test <- inp_freeze %>%
+      left_join(target_bands, by = ".band") %>% 
+      mutate(.fail = case_when(
+        .f_ratio < .band_min ~ TRUE,
+        .f_ratio > .band_max & !is.na(.band_max) ~ TRUE,
+        TRUE ~ FALSE
+      ))
+    
+    if(any(inp_freeze_test$.fail)){
+      stop("Supplied input 'ratio_freeze' values must be within price bands.")
+    }
+    rm(inp_freeze_test)
     
     #TODO: Add script to split this df into many if needed
     
